@@ -2,14 +2,13 @@ package main
 
 import (
 	"bytes"
-	"encoding/hex"
 	"fmt"
 	"github.com/overflow0x93/hellshell/pkg/common"
+	"github.com/overflow0x93/hellshell/pkg/deobfuscation"
+	"github.com/overflow0x93/hellshell/pkg/io"
 	"github.com/overflow0x93/hellshell/pkg/obfuscation"
 	"github.com/overflow0x93/hellshell/pkg/stringfunctions"
-	"math/rand"
 	"os"
-	"time"
 )
 
 // Array of supported output (supported input argv[2] encryption/obfuscation type)
@@ -77,7 +76,7 @@ func main() {
 
 	// Reading input payload
 	var err error
-	pPayloadInput, err = ReadPayloadFile(os.Args[1])
+	pPayloadInput, err = io.ReadPayloadFile(os.Args[1])
 	if err != nil {
 		fmt.Println("Error reading payload file:", err)
 		os.Exit(-1)
@@ -86,6 +85,7 @@ func main() {
 	// Initialize the possible append variables
 	pAppendedPayload = pPayloadInput
 	dwAppendedSize = len(pPayloadInput)
+	//ppDAddress := []byte{}
 
 	switch os.Args[2] {
 	case "mac":
@@ -99,13 +99,6 @@ func main() {
 		}
 
 		obfuscation.GenerateMacOutput(pAppendedPayload)
-		/*
-			err = GenerateMacOutput(pAppendedPayload)
-			if err != nil {
-				fmt.Println("Error generating MAC output:", err)
-				os.Exit(-1)
-			}*/
-
 		dwType = common.MACFuscation
 
 	case "ipv4":
@@ -119,13 +112,6 @@ func main() {
 		}
 
 		obfuscation.GenerateIpv4Output(pAppendedPayload)
-		/*
-			err = GenerateIpv4Output(pAppendedPayload)
-			if err != nil {
-				fmt.Println("Error generating IPv4 output:", err)
-				os.Exit(-1)
-			}*/
-
 		dwType = common.IPv4Fuscation
 
 	case "ipv6":
@@ -139,13 +125,6 @@ func main() {
 		}
 
 		obfuscation.GenerateIpv6Output(pAppendedPayload)
-		/*
-			err = GenerateIpv6Output(pAppendedPayload)
-			if err != nil {
-				fmt.Println("Error generating IPv6 output:", err)
-				os.Exit(-1)
-			}*/
-
 		dwType = common.IPv6Fuscation
 
 	case "uuid":
@@ -157,54 +136,42 @@ func main() {
 			}
 			dwAppendedSize = len(pAppendedPayload)
 		}
-		/*
-			err = GenerateUuidOutput(pAppendedPayload)
-			if err != nil {
-				fmt.Println("Error generating UUID output:", err)
-				os.Exit(-1)
-			}*/
-		obfuscation.GenerateUuidOutput(pAppendedPayload)
+		output := obfuscation.GenerateUuidOutput(pAppendedPayload)
 
 		dwType = common.UUIDFuscation
+		//pDSize := len(output)
+		deob, err := deobfuscation.UuidDeobfuscation(output) //, &ppDAddress, &pDSize)
+		if err != nil {
+			fmt.Println("Error decoding UUID payload:", err)
+		}
+		fmt.Println(deob)
+		fmt.Println(string(deob))
 
 	case "aes":
-		key := GenerateRandomBytes(common.AESKeySize)
-		iv := GenerateRandomBytes(common.AESIVSize)
+		key := common.GenerateRandomBytes(common.AESKeySize)
+		iv := common.GenerateRandomBytes(common.AESIVSize)
 		keyCopy := make([]byte, len(key))
 		ivCopy := make([]byte, len(iv))
 		copy(keyCopy, key)
 		copy(ivCopy, iv)
 
 		common.SimpleEncryption(pPayloadInput, key, iv)
-		/*
-			pCipherText, err = SimpleEncryption(pPayloadInput, key, iv)
-			if err != nil {
-				fmt.Println("Error during AES encryption:", err)
-				os.Exit(-1)
-			}*/
 		dwCipherSize = len(pCipherText)
 
 		stringfunctions.PrintDecodeFunctionality(common.AESEncryption)
-		PrintHexData("AesCipherText", pCipherText)
-		PrintHexData("AesKey", keyCopy)
-		PrintHexData("AesIv", ivCopy)
+		common.PrintHexData("AesCipherText", pCipherText)
+		common.PrintHexData("AesKey", keyCopy)
+		common.PrintHexData("AesIv", ivCopy)
 
 	case "rc4":
-		key := GenerateRandomBytes(common.RC4KeySize)
+		key := common.GenerateRandomBytes(common.RC4KeySize)
 		keyCopy := make([]byte, len(key))
 		copy(keyCopy, key)
 
 		common.Rc4EncryptionViSystemFunc032(key, pPayloadInput)
-		/*
-			err = Rc4EncryptionViSystemFunc032(key, pPayloadInput)
-			if err != nil {
-				fmt.Println("Error during RC4 encryption:", err)
-				os.Exit(-1)
-			}*/
-
 		stringfunctions.PrintDecodeFunctionality(common.RC4Encryption)
-		PrintHexData("Rc4CipherText", pPayloadInput)
-		PrintHexData("Rc4Key", keyCopy)
+		common.PrintHexData("Rc4CipherText", pPayloadInput)
+		common.PrintHexData("Rc4Key", keyCopy)
 	}
 
 	fmt.Println("\n\n")
@@ -215,77 +182,3 @@ func main() {
 
 	os.Exit(0)
 }
-
-func ReadPayloadFile(fileInput string) ([]byte, error) {
-	data, err := os.ReadFile(fileInput)
-	//if err != nil {
-	//	return nil, errors.Wrap(err, "failed to read file")
-	//}
-	if err != nil {
-		return nil, err //, errors.Wrap(err, "failed to read file")
-	}
-	return data, nil
-}
-
-func GenerateRandomBytes(size int) []byte {
-	rand.Seed(time.Now().UnixNano())
-	bytes := make([]byte, size)
-	rand.Read(bytes)
-	return bytes
-}
-
-func PrintHexData(name string, data []byte) {
-	fmt.Printf("%s: %s\n", name, hex.EncodeToString(data))
-}
-
-/*
-func GenerateMacOutput(shellcode []byte) error {
-	// Implement the logic to generate the MAC output
-	return nil
-}
-
-func GenerateIpv4Output(shellcode []byte) error {
-	// Implement the logic to generate the IPv4 output
-	return nil
-}
-
-func GenerateIpv6Output(shellcode []byte) error {
-	// Implement the logic to generate the IPv6 output
-	return nil
-}
-
-func GenerateUuidOutput(shellcode []byte) error {
-	// Implement the logic to generate the UUID output
-	return nil
-}
-
-func SimpleEncryption(plainText, key, iv []byte) ([]byte, error) {
-	// Implement the logic for AES encryption
-	return nil, nil
-}
-
-func Rc4EncryptionViSystemFunc032(key, payload []byte) error {
-	// Implement the logic for RC4 encryption
-	return nil
-}
-*/
-/*
-func PrintDecodeFunctionality(decodeType int) {
-	switch decodeType {
-	case common.UUIDFuscation:
-		fmt.Println("UUID Fuscation")
-	case common.AESEncryption:
-		fmt.Println("AES Encryption")
-	case common.RC4Encryption:
-		fmt.Println("RC4 Encryption")
-	case common.IPv6Fuscation:
-		fmt.Println("IPv6 Fuscation")
-	case common.IPv4Fuscation:
-		fmt.Println("IPv4 Fuscation")
-	case common.MACFuscation:
-		fmt.Println("MAC Fuscation")
-	default:
-		fmt.Println("Unknown type")
-	}
-}
-*/

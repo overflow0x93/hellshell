@@ -35,8 +35,6 @@ func GenerateUuidOutput(shellcode []byte) []string {
 		}
 		Output = append(Output, uuid)
 	}
-	//fmt.Println("}")
-	//fmt.Printf("const NumberOfElements = %d\n\n", len(shellcode)/16)
 	return Output
 }
 
@@ -49,7 +47,6 @@ func GenerateMacOutput(shellcode []byte) []string {
 		return nil
 	}
 	var Output []string
-	//fmt.Println("var MacArray = []string{")
 	for i := 0; i < len(shellcode); i += 6 {
 		mac := GenerateMac(
 			int(shellcode[i]), int(shellcode[i+1]), int(shellcode[i+2]), int(shellcode[i+3]),
@@ -65,8 +62,6 @@ func GenerateMacOutput(shellcode []byte) []string {
 		}
 		Output = append(Output, mac)
 	}
-	//fmt.Println("}")
-	//fmt.Printf("const NumberOfElements = %d\n\n", len(shellcode)/6)
 	return Output
 }
 
@@ -101,8 +96,6 @@ func GenerateIpv6Output(shellcode []byte) []string {
 		}
 		Output = append(Output, ipv6)
 	}
-	//fmt.Println("}")
-	//fmt.Printf("const NumberOfElements = %d\n\n", len(shellcode)/16)
 	return Output
 }
 
@@ -130,19 +123,5 @@ func GenerateIpv4Output(shellcode []byte) []string {
 		}
 		Output = append(Output, ipv4)
 	}
-	//fmt.Println("}")
-	//fmt.Printf("const NumberOfElements = %d\n\n", len(shellcode)/4)
 	return Output
 }
-
-/*
-func main() {
-	// Example usage: Replace with your actual shellcode
-	shellcode := []byte{0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90, 0x90}
-
-	GenerateUuidOutput(shellcode)
-	GenerateMacOutput(shellcode)
-	GenerateIpv6Output(shellcode)
-	GenerateIpv4Output(shellcode)
-}
-*/

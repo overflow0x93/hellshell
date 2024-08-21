@@ -166,6 +166,7 @@ func SimpleEncryption(pPlainTextData []byte, pKey, pIv []byte) ([]byte, error) {
 	return Aes.CipherText, nil
 }
 
+/*
 func main() {
 	// Example usage
 	key := make([]byte, AESKEYSIZE)
@@ -186,3 +187,4 @@ func main() {
 	PrintHexData("iv", iv)
 	PrintHexData("ciphertext", ciphertext)
 }
+*/

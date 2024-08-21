@@ -12,10 +12,11 @@ func GenerateUuid(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p int) string {
 	return fmt.Sprintf("%s-%s-%s%s", output0, output1, output2, output3)
 }
 
-func GenerateUuidOutput(shellcode []byte) {
+func GenerateUuidOutput(shellcode []byte) []string {
 	if len(shellcode)%16 != 0 {
-		return
+		return nil
 	}
+	var Output []string
 	fmt.Println("var UuidArray = []string{")
 	for i := 0; i < len(shellcode); i += 16 {
 		uuid := GenerateUuid(
@@ -32,19 +33,22 @@ func GenerateUuidOutput(shellcode []byte) {
 		if (i/16)%3 == 2 {
 			fmt.Println()
 		}
+		Output = append(Output, uuid)
 	}
 	fmt.Println("}")
 	fmt.Printf("const NumberOfElements = %d\n\n", len(shellcode)/16)
+	return Output
 }
 
 func GenerateMac(a, b, c, d, e, f int) string {
 	return fmt.Sprintf("%02X-%02X-%02X-%02X-%02X-%02X", a, b, c, d, e, f)
 }
 
-func GenerateMacOutput(shellcode []byte) {
+func GenerateMacOutput(shellcode []byte) []string {
 	if len(shellcode)%6 != 0 {
-		return
+		return nil
 	}
+	var Output []string
 	fmt.Println("var MacArray = []string{")
 	for i := 0; i < len(shellcode); i += 6 {
 		mac := GenerateMac(
@@ -59,9 +63,11 @@ func GenerateMacOutput(shellcode []byte) {
 		if (i/6)%6 == 5 {
 			fmt.Println()
 		}
+		Output = append(Output, mac)
 	}
 	fmt.Println("}")
 	fmt.Printf("const NumberOfElements = %d\n\n", len(shellcode)/6)
+	return Output
 }
 
 func GenerateIpv6(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p int) string {
@@ -72,10 +78,11 @@ func GenerateIpv6(a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p int) string {
 	return fmt.Sprintf("%s:%s:%s:%s", output0, output1, output2, output3)
 }
 
-func GenerateIpv6Output(shellcode []byte) {
+func GenerateIpv6Output(shellcode []byte) []string {
 	if len(shellcode)%16 != 0 {
-		return
+		return nil
 	}
+	var Output []string
 	fmt.Println("var Ipv6Array = []string{")
 	for i := 0; i < len(shellcode); i += 16 {
 		ipv6 := GenerateIpv6(
@@ -92,19 +99,22 @@ func GenerateIpv6Output(shellcode []byte) {
 		if (i/16)%3 == 2 {
 			fmt.Println()
 		}
+		Output = append(Output, ipv6)
 	}
 	fmt.Println("}")
 	fmt.Printf("const NumberOfElements = %d\n\n", len(shellcode)/16)
+	return Output
 }
 
 func GenerateIpv4(a, b, c, d int) string {
 	return fmt.Sprintf("%d.%d.%d.%d", a, b, c, d)
 }
 
-func GenerateIpv4Output(shellcode []byte) {
+func GenerateIpv4Output(shellcode []byte) []string {
 	if len(shellcode)%4 != 0 {
-		return
+		return nil
 	}
+	var Output []string
 	fmt.Println("var Ipv4Array = []string{")
 	for i := 0; i < len(shellcode); i += 4 {
 		ipv4 := GenerateIpv4(
@@ -118,9 +128,11 @@ func GenerateIpv4Output(shellcode []byte) {
 		if (i/4)%8 == 7 {
 			fmt.Println()
 		}
+		Output = append(Output, ipv4)
 	}
 	fmt.Println("}")
 	fmt.Printf("const NumberOfElements = %d\n\n", len(shellcode)/4)
+	return Output
 }
 
 /*

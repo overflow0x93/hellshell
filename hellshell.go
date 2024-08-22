@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"github.com/overflow0x93/hellshell/pkg/common"
 	"github.com/overflow0x93/hellshell/pkg/deobfuscation"
@@ -13,14 +12,6 @@ import (
 
 // Array of supported output (supported input argv[2] encryption/obfuscation type)
 var SupportedOutput = []string{"mac", "ipv4", "ipv6", "uuid", "aes", "rc4"}
-
-// AppendInputPayload appends payload to make its size a multiple of the given value.
-func AppendInputPayload(multipleOf int, payload []byte) ([]byte, error) {
-	appendSize := len(payload) + multipleOf - (len(payload) % multipleOf)
-	appendedPayload := bytes.Repeat([]byte{0x90}, appendSize)
-	copy(appendedPayload, payload)
-	return appendedPayload, nil
-}
 
 // PrintHelp prints the help message.
 func PrintHelp(argv0 string) int {
@@ -90,7 +81,7 @@ func main() {
 	switch os.Args[2] {
 	case "mac":
 		if len(pPayloadInput)%6 != 0 {
-			pAppendedPayload, err = AppendInputPayload(6, pPayloadInput)
+			pAppendedPayload, err = common.AppendInputPayload(6, pPayloadInput)
 			if err != nil {
 				fmt.Println("Error appending payload:", err)
 				os.Exit(-1)
@@ -98,12 +89,17 @@ func main() {
 			dwAppendedSize = len(pAppendedPayload)
 		}
 
-		obfuscation.GenerateMacOutput(pAppendedPayload)
+		output := obfuscation.GenerateMacOutput(pAppendedPayload)
 		dwType = common.MACFuscation
+		deob, err := deobfuscation.MacDeobfuscation(output)
+		if err != nil {
+			fmt.Println("Error decoding MAC payload:", err)
+		}
+		fmt.Println(string(deob))
 
 	case "ipv4":
 		if len(pPayloadInput)%4 != 0 {
-			pAppendedPayload, err = AppendInputPayload(4, pPayloadInput)
+			pAppendedPayload, err = common.AppendInputPayload(4, pPayloadInput)
 			if err != nil {
 				fmt.Println("Error appending payload:", err)
 				os.Exit(-1)
@@ -111,12 +107,18 @@ func main() {
 			dwAppendedSize = len(pAppendedPayload)
 		}
 
-		obfuscation.GenerateIpv4Output(pAppendedPayload)
+		output := obfuscation.GenerateIpv4Output(pAppendedPayload)
 		dwType = common.IPv4Fuscation
+
+		deob, err := deobfuscation.Ipv4Deobfuscation(output)
+		if err != nil {
+			fmt.Println("Error decoding IPv4 payload:", err)
+		}
+		fmt.Println(string(deob))
 
 	case "ipv6":
 		if len(pPayloadInput)%16 != 0 {
-			pAppendedPayload, err = AppendInputPayload(16, pPayloadInput)
+			pAppendedPayload, err = common.AppendInputPayload(16, pPayloadInput)
 			if err != nil {
 				fmt.Println("Error appending payload:", err)
 				os.Exit(-1)
@@ -124,12 +126,18 @@ func main() {
 			dwAppendedSize = len(pAppendedPayload)
 		}
 
-		obfuscation.GenerateIpv6Output(pAppendedPayload)
+		output := obfuscation.GenerateIpv6Output(pAppendedPayload)
 		dwType = common.IPv6Fuscation
+
+		deob, err := deobfuscation.Ipv6Deobfuscation(output)
+		if err != nil {
+			fmt.Println("Error decoding IPv6 payload:", err)
+		}
+		fmt.Println(string(deob))
 
 	case "uuid":
 		if len(pPayloadInput)%16 != 0 {
-			pAppendedPayload, err = AppendInputPayload(16, pPayloadInput)
+			pAppendedPayload, err = common.AppendInputPayload(16, pPayloadInput)
 			if err != nil {
 				fmt.Println("Error appending payload:", err)
 				os.Exit(-1)
@@ -139,12 +147,10 @@ func main() {
 		output := obfuscation.GenerateUuidOutput(pAppendedPayload)
 
 		dwType = common.UUIDFuscation
-		//pDSize := len(output)
 		deob, err := deobfuscation.UuidDeobfuscation(output) //, &ppDAddress, &pDSize)
 		if err != nil {
 			fmt.Println("Error decoding UUID payload:", err)
 		}
-		fmt.Println(deob)
 		fmt.Println(string(deob))
 
 	case "aes":

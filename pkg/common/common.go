@@ -1,6 +1,7 @@
 package common
 
 import (
+	"bytes"
 	"encoding/hex"
 	"fmt"
 	"math/rand"
@@ -33,6 +34,14 @@ func ReadPayloadFile(fileInput string) ([]byte, error) {
 // WritePayloadFile writes a file to disk
 func WritePayloadFile(fileInput string, payloadData []byte) error {
 	return os.WriteFile(fileInput, payloadData, 0644)
+}
+
+// AppendInputPayload appends payload to make its size a multiple of the given value.
+func AppendInputPayload(multipleOf int, payload []byte) ([]byte, error) {
+	appendSize := len(payload) + multipleOf - (len(payload) % multipleOf)
+	appendedPayload := bytes.Repeat([]byte{0x90}, appendSize)
+	copy(appendedPayload, payload)
+	return appendedPayload, nil
 }
 
 // PrintDecodeFunctionality prints the decryption/deobfuscation function as a string to the screen

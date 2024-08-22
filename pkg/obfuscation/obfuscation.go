@@ -26,12 +26,12 @@ func GenerateUuidOutput(shellcode []byte) []string {
 			int(shellcode[i+12]), int(shellcode[i+13]), int(shellcode[i+14]), int(shellcode[i+15]),
 		)
 		if i+16 < len(shellcode) {
-			fmt.Printf("\"%s\", ", uuid)
+			//fmt.Printf("\"%s\", ", uuid)
 		} else {
-			fmt.Printf("\"%s\"", uuid)
+			//fmt.Printf("\"%s\"", uuid)
 		}
 		if (i/16)%3 == 2 {
-			fmt.Println()
+			//fmt.Println()
 		}
 		Output = append(Output, uuid)
 	}
@@ -53,12 +53,12 @@ func GenerateMacOutput(shellcode []byte) []string {
 			int(shellcode[i+4]), int(shellcode[i+5]),
 		)
 		if i+6 < len(shellcode) {
-			fmt.Printf("\"%s\", ", mac)
+			//fmt.Printf("\"%s\", ", mac)
 		} else {
-			fmt.Printf("\"%s\"", mac)
+			//fmt.Printf("\"%s\"", mac)
 		}
 		if (i/6)%6 == 5 {
-			fmt.Println()
+			//fmt.Println()
 		}
 		Output = append(Output, mac)
 	}
@@ -87,12 +87,12 @@ func GenerateIpv6Output(shellcode []byte) []string {
 			int(shellcode[i+12]), int(shellcode[i+13]), int(shellcode[i+14]), int(shellcode[i+15]),
 		)
 		if i+16 < len(shellcode) {
-			fmt.Printf("\"%s\", ", ipv6)
+			//fmt.Printf("\"%s\", ", ipv6)
 		} else {
-			fmt.Printf("\"%s\"", ipv6)
+			//fmt.Printf("\"%s\"", ipv6)
 		}
 		if (i/16)%3 == 2 {
-			fmt.Println()
+			//fmt.Println()
 		}
 		Output = append(Output, ipv6)
 	}
@@ -114,12 +114,12 @@ func GenerateIpv4Output(shellcode []byte) []string {
 			int(shellcode[i]), int(shellcode[i+1]), int(shellcode[i+2]), int(shellcode[i+3]),
 		)
 		if i+4 < len(shellcode) {
-			fmt.Printf("\"%s\", ", ipv4)
+			//fmt.Printf("\"%s\", ", ipv4)
 		} else {
-			fmt.Printf("\"%s\"", ipv4)
+			//fmt.Printf("\"%s\"", ipv4)
 		}
 		if (i/4)%8 == 7 {
-			fmt.Println()
+			//fmt.Println()
 		}
 		Output = append(Output, ipv4)
 	}

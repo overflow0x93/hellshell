@@ -1,6 +1,7 @@
 package io
 
 import (
+	"bytes"
 	"os"
 )
 
@@ -21,4 +22,11 @@ func WritePayloadFile(filePath string, payloadSize int, payloadData []byte) erro
 	}
 
 	return nil
+}
+
+func AppendInputPayload(multipleOf int, payload []byte) ([]byte, error) {
+	appendSize := len(payload) + multipleOf - (len(payload) % multipleOf)
+	appendedPayload := bytes.Repeat([]byte{0x90}, appendSize)
+	copy(appendedPayload, payload)
+	return appendedPayload, nil
 }

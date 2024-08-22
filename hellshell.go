@@ -90,12 +90,31 @@ func main() {
 		}
 
 		output := obfuscation.GenerateMacOutput(pAppendedPayload)
+		fmt.Println("========= PAYLOAD ========\n")
 		dwType = common.MACFuscation
+		for i := 0; i < len(output); i += 4 {
+			if i+4 > len(output) {
+				if i+3 < len(output) {
+					fmt.Printf("\"%s\",\t\"%s\",\t\"%s\"\n\n", output[i], output[i+1], output[i+2])
+				} else if i+2 < len(output) {
+					fmt.Printf("\"%s\",\t\"%s\"\n\n", output[i], output[i+1])
+				} else if i+1 < len(output) {
+					fmt.Printf("\"%s\"\n\n", output[i])
+				}
+				break
+			} else if i+4 == len(output) {
+				fmt.Printf("\"%s\",\t\"%s\",\t\"%s\",\t\"%s\"\n\n", output[i], output[i+1], output[i+2], output[i+3])
+			} else {
+				fmt.Printf("\"%s\",\t\"%s\",\t\"%s\",\t\"%s\",\n", output[i], output[i+1], output[i+2], output[i+3])
+			}
+		}
 		deob, err := deobfuscation.MacDeobfuscation(output)
 		if err != nil {
 			fmt.Println("Error decoding MAC payload:", err)
+		} else {
+			fmt.Println("========= Sanity Deobfuscation ========\n")
+			fmt.Println(string(deob))
 		}
-		fmt.Println(string(deob))
 
 	case "ipv4":
 		if len(pPayloadInput)%4 != 0 {
@@ -108,13 +127,78 @@ func main() {
 		}
 
 		output := obfuscation.GenerateIpv4Output(pAppendedPayload)
+		fmt.Println("========= PAYLOAD ========\n")
 		dwType = common.IPv4Fuscation
+		for i := 0; i < len(output); i += 4 {
+			if i+4 > len(output) {
+				if i+3 < len(output) {
+					if len(output[i]) < 13 {
+						fmt.Printf("\"%s\",\t\t", output[i])
+					} else {
+						fmt.Printf("\"%s\",\t", output[i])
+					}
+					if len(output[i+1]) < 13 {
+						fmt.Printf("\"%s\",\t\t", output[i+1])
+					} else {
+						fmt.Printf("\"%s\",\t", output[i+1])
+					}
+					fmt.Printf("\"%s\"\n\n", output[i+2])
+				} else if i+2 < len(output) {
+					if len(output[i]) < 13 {
+						fmt.Printf("\"%s\",\t\t", output[i])
+					} else {
+						fmt.Printf("\"%s\",\t", output[i])
+					}
+					fmt.Printf("\"%s\"\n\n", output[i+1])
+				} else if i+1 < len(output) {
+					fmt.Printf("\"%s\"\n\n", output[i])
+				}
+				break
+			} else if i+4 == len(output) {
+				if len(output[i]) < 13 {
+					fmt.Printf("\"%s\",\t\t", output[i])
+				} else {
+					fmt.Printf("\"%s\",\t", output[i])
+				}
+				if len(output[i+1]) < 13 {
+					fmt.Printf("\"%s\",\t\t", output[i+1])
+				} else {
+					fmt.Printf("\"%s\",\t", output[i+1])
+				}
+				if len(output[i+2]) < 13 {
+					fmt.Printf("\"%s\",\t\t", output[i+2])
+				} else {
+					fmt.Printf("\"%s\",\t", output[i+2])
+				}
+				fmt.Printf("\"%s\"\n\n", output[i+3])
+			} else {
+				if len(output[i]) < 13 {
+					fmt.Printf("\"%s\",\t\t", output[i])
+				} else {
+					fmt.Printf("\"%s\",\t", output[i])
+				}
+				if len(output[i+1]) < 13 {
+					fmt.Printf("\"%s\",\t\t", output[i+1])
+				} else {
+					fmt.Printf("\"%s\",\t", output[i+1])
+				}
+				if len(output[i+2]) < 13 {
+					fmt.Printf("\"%s\",\t\t", output[i+2])
+				} else {
+					fmt.Printf("\"%s\",\t", output[i+2])
+				}
+				fmt.Printf("\"%s\",\n", output[i+3])
+			}
+
+		}
 
 		deob, err := deobfuscation.Ipv4Deobfuscation(output)
 		if err != nil {
 			fmt.Println("Error decoding IPv4 payload:", err)
+		} else {
+			fmt.Println("========= Sanity Deobfuscation ========\n")
+			fmt.Println(string(deob))
 		}
-		fmt.Println(string(deob))
 
 	case "ipv6":
 		if len(pPayloadInput)%16 != 0 {
@@ -127,13 +211,24 @@ func main() {
 		}
 
 		output := obfuscation.GenerateIpv6Output(pAppendedPayload)
+		fmt.Println("========= PAYLOAD ========\n")
 		dwType = common.IPv6Fuscation
-
+		for i := 0; i < len(output); i += 2 {
+			if i+2 > len(output) {
+				fmt.Printf("\"%s\"\n\n", output[i])
+			} else if i+2 == len(output) {
+				fmt.Printf("\"%s\",\t\"%s\"\n\n", output[i], output[i+1])
+			} else {
+				fmt.Printf("\"%s\",\t\"%s\",\n", output[i], output[i+1])
+			}
+		}
 		deob, err := deobfuscation.Ipv6Deobfuscation(output)
 		if err != nil {
 			fmt.Println("Error decoding IPv6 payload:", err)
+		} else {
+			fmt.Println("========= Sanity Deobfuscation ========\n")
+			fmt.Println(string(deob))
 		}
-		fmt.Println(string(deob))
 
 	case "uuid":
 		if len(pPayloadInput)%16 != 0 {
@@ -145,13 +240,24 @@ func main() {
 			dwAppendedSize = len(pAppendedPayload)
 		}
 		output := obfuscation.GenerateUuidOutput(pAppendedPayload)
-
+		fmt.Println("========= PAYLOAD ========\n")
 		dwType = common.UUIDFuscation
+		for i := 0; i < len(output); i += 2 {
+			if i+2 > len(output) {
+				fmt.Printf("\"%s\"\n\n", output[i])
+			} else if i+2 == len(output) {
+				fmt.Printf("\"%s\",\t\"%s\"\n\n", output[i], output[i+1])
+			} else {
+				fmt.Printf("\"%s\",\t\"%s\",\n", output[i], output[i+1])
+			}
+		}
 		deob, err := deobfuscation.UuidDeobfuscation(output) //, &ppDAddress, &pDSize)
 		if err != nil {
 			fmt.Println("Error decoding UUID payload:", err)
+		} else {
+			fmt.Println("========= Sanity Deobfuscation ========\n")
+			fmt.Println(string(deob))
 		}
-		fmt.Println(string(deob))
 
 	case "aes":
 		key := common.GenerateRandomBytes(common.AESKeySize)

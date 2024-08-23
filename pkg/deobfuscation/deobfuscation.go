@@ -7,9 +7,16 @@ import (
 	"strings"
 )
 
+func removeTrailing144Bytes(data []byte) []byte {
+	// Iterate from the end of the slice backwards
+	for len(data) > 0 && data[len(data)-1] == 144 {
+		data = data[:len(data)-1]
+	}
+	return data
+}
+
 // UuidDeobfuscation processes an array of UUID strings, converts them to raw bytes, and returns a buffer.
 func UuidDeobfuscation(uuidArray []string) ([]byte, error) {
-
 	var shellcode []byte
 
 	for _, uuidStr := range uuidArray {
@@ -32,8 +39,8 @@ func UuidDeobfuscation(uuidArray []string) ([]byte, error) {
 		// Append to the shellcode
 		shellcode = append(shellcode, originalOrder...)
 	}
-
-	return shellcode, nil
+	shellcodeData := removeTrailing144Bytes(shellcode)
+	return shellcodeData, nil
 }
 
 func MacDeobfuscation(macArray []string) ([]byte, error) {
@@ -56,7 +63,8 @@ func MacDeobfuscation(macArray []string) ([]byte, error) {
 		}
 	}
 
-	return shellcode, nil
+	shellcodeData := removeTrailing144Bytes(shellcode)
+	return shellcodeData, nil
 }
 
 func Ipv6Deobfuscation(ipv6Array []string) ([]byte, error) {
@@ -86,7 +94,8 @@ func Ipv6Deobfuscation(ipv6Array []string) ([]byte, error) {
 		}
 	}
 
-	return shellcode, nil
+	shellcodeData := removeTrailing144Bytes(shellcode)
+	return shellcodeData, nil
 }
 
 func Ipv4Deobfuscation(ipv4Array []string) ([]byte, error) {
@@ -109,5 +118,6 @@ func Ipv4Deobfuscation(ipv4Array []string) ([]byte, error) {
 		}
 	}
 
-	return shellcode, nil
+	shellcodeData := removeTrailing144Bytes(shellcode)
+	return shellcodeData, nil
 }
